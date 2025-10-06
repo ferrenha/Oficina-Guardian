@@ -2,70 +2,83 @@ const pool = require('../db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const generic = (res, code = 401) =>
+  res.status(code).json({ error: 'Usuário ou senha incorretos.' });
+
+// POST /register
 const registerUser = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
+  const { username, password } = req.body || {};
+  if (!username || !password) return generic(res, 400);
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, 10);
 
+    
+    const q = `
+      INSERT INTO users (username, password, role)
+      VALUES ($1, $2, 'user')
+      ON CONFLICT (username) DO NOTHING
+      RETURNING id, username, role
+    `;
+    const r = await pool.query(q, [username.trim(), hash]);
 
-    const result = await pool.query(
-      'INSERT INTO users (username, password, role) VALUES ($1, $2, $3) RETURNING id, username, role',
-      [username, hashedPassword, 'user']
-    );
-    const user = result.rows[0];
+    if (r.rows.length === 0) {
+      
+      return generic(res, 400);
+    }
 
+    const user = r.rows[0];
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET || 'changeme',
       { expiresIn: '1h' }
     );
-
     return res.json({ token, id: user.id, username: user.username, role: user.role });
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
+  } catch {
+    return generic(res, 400);
   }
 };
 
-// Login
+// POST /login
 const loginUser = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
+  const { username, password } = req.body || {};
+  if (!username || !password) return generic(res);
 
   try {
-    const result = await pool.query('SELECT id, username, password, role FROM users WHERE username=$1', [username]);
-    if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    const r = await pool.query(
+      'SELECT id, username, password, role FROM users WHERE username=$1',
+      [username]
+    );
+    if (r.rows.length === 0) return generic(res);
 
-    const user = result.rows[0];
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+    const user = r.rows[0];
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return generic(res);
 
     const token = jwt.sign(
       { id: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET || 'changeme',
       { expiresIn: '1h' }
     );
-
     return res.json({ token, id: user.id, username: user.username, role: user.role });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+  } catch {
+    return generic(res);
   }
 };
 
-
-const getUsers = async (req, res) => {
+// GET /api/users
+const getUsers = async (_req, res) => {
   try {
     const result = await pool.query('SELECT id, username, role FROM users');
     return res.json(result.rows);
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+  } catch {
+    return res.status(500).json({ error: 'Erro interno.' });
   }
 };
 
-
+// GET /api/users/me
 const getMe = (req, res) => {
-  if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
+  if (!req.user) return res.status(401).json({ error: 'Não autenticado.' });
   return res.json({ ok: true });
 };
 
