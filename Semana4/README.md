@@ -1,10 +1,11 @@
-API em Node.js + PostgreSQL + Página Web em HTML — Semana 3
+# Oficina Guardian — Semana 4 (Docker + Postgres + Front)
 
-Projeto de API simples em Node.js utilizando Express e PostgreSQL, com páginas estáticas para interação (login/registro).
- 
+Aplicação web simples (Node.js + Express + PostgreSQL) com páginas estáticas (HTML) para login/registro e uma rota restrita. Pensada para uso didático/CTF.
+
+
+> Observação: este README descreve **como subir e usar**.
 
 ## Tecnologias
-
 - Node.js
 
 - Express
@@ -19,51 +20,56 @@ Projeto de API simples em Node.js utilizando Express e PostgreSQL, com páginas 
 
 - CORS
 
-## Estrutura de pastas
-
-- server.js — servidor Express
-
-- db.js — conexão com o banco
-
-- .env — variáveis de ambiente 
-
-- package.json
-
-- controllers/
-
-- middleware/
-
-- routes/
-
-- public/ 
+- Docker Desktop (ou Docker Engine + Compose V2)
 
 ## Configuração
 - git clone https://github.com/ferrenha/Oficina-Guardian.git
-- cd Oficina-Guardian/Semana3
+- cd Oficina-Guardian/Semana4
 - npm init -y
 - npm install express pg bcrypt jsonwebtoken dotenv cors
 
-## Banco de Dados
-CREATE DATABASE db;
 
--- conectar no db
+## Subir tudo com Docker Compose
+- Na pasta **Semana4/**:
 
-CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR(50) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  role VARCHAR(20) NOT NULL DEFAULT 'user'
-);
+- docker compose down -v          # opcional: reseta banco (limpa volumes)
+- docker compose up --build
 
-## Arquivo .env
-DB_USER=seuusuario
-DB_PASS=suasenha
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=db
-PORT=3000
-JWT_SECRET=segredo
 
-## Executar API
-- npm start
-- Acessar: http://localhost:3000
+## Estrutura
+- controllers/      # controllers da API
+- middleware/       # middlewares (inclui auth)
+- routes/           # rotas da API
+- public/           # páginas estáticas (index/login/register/dashboard/admin)
+- db.js             # conexão Postgres
+- server.js         # servidor Express
+- init.sql          # cria tabela e insere usuários iniciais
+- Dockerfile        # imagem do app
+- docker-compose.yml
+
+## Páginas & Endpoints
+
+- Páginas (estáticas)
+
+- / — home (links para login/registro)
+
+- /login.html
+
+- /register.html
+
+- /dashboard.html
+
+- /admin.html (área restrita)
+
+API (prefixo /api/users)
+
+- POST /register — cria usuário comum
+
+- POST /login — autentica e retorna JWT
+
+- GET /admin — conteúdo restrito (requer token)
+
+- GET /me — valida token
+
+- GET / — lista usuários (id, username, role)
+
