@@ -5,7 +5,7 @@ Aplicação web simples (Node.js + Express + PostgreSQL) com páginas estáticas
 ## 🎯 Visão Geral do Desafio
 
 - Objetivo: explore a aplicação e alcance privilégios mais altos.
-- Flag: `MAUA{...}`
+- Flag: `GUARDIAN{...}`
 
 ## 🚀 Início Rápido
 
@@ -48,13 +48,12 @@ Aplicação web simples (Node.js + Express + PostgreSQL) com páginas estáticas
 
 2. Executar o container:
    ```bash
-   docker run -p 80:80 -p 22:22 -p 5432:5432 --name justdecode-container justdecode
+   docker run -p 80:80 -p 22:22 -p 5432:5432 jsutdecode
    ```
 
 3. Acessar a aplicação:
    - http://localhost (ou http://localhost:80)
 
-Usuários iniciais (seed): definidos em `init.sql`.
 
 ## 🛠️ Endpoints da API
 
@@ -79,11 +78,6 @@ curl -X POST http://localhost/api/users/register \
 curl -X POST http://localhost/api/users/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"alice","password":"senhaSegura"}'
-
-# /me (substitua TOKEN pelo JWT obtido)
-curl http://localhost/api/users/me \
-  -H 'Authorization: Bearer TOKEN'
-```
 
 ## ⚠️ Aviso
 
