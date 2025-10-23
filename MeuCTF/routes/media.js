@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
 const multer = require('multer');
 const authenticateToken = require('../middleware/auth');
 
@@ -40,23 +39,11 @@ router.post('/avatar', authenticateToken, upload.single('file'), (req, res) => {
 
   const filename = req.file.filename;
   const inPath = path.join(UPLOAD_DIR, filename);
-
   const outName = `user-${req.user.id}.png`;
   const outPath = path.join(OUT_DIR, outName);
 
-
-
-
-  const size = (req.query?.size || '300x300').toString();
-  const shellQ = (s) => `'${s.replace(/'/g, "'\\''")}'`;
-
-  const cmd = `su ctfuser -s /bin/sh -c "/usr/bin/convert ${shellQ(inPath)} -resize ${size} ${shellQ(outPath)}"`;
-
-  exec(cmd, (err, _stdout, _stderr) => {
-    if (err) {
-      console.error('convert error:', err && err.message);
-      return res.status(500).json({ error: 'Falha ao processar a imagem' });
-    }
+  fs.copyFile(inPath, outPath, (err) => {
+    if (err) return res.status(500).json({ error: 'Falha ao salvar a imagem' });
     return res.json({ ok: true, message: 'Avatar atualizado', file: `/avatars/${outName}?t=${Date.now()}` });
   });
 });
