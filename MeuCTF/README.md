@@ -26,21 +26,10 @@ Este README foca em como configurar, subir e usar a aplicação.
 2) Construa a imagem do app:
    - `docker build -t justdecode .`
 
-3) Prepare o banco de dados (PostgreSQL):
-   - Opção A — Usar Postgres local (instalado no host):
-     - Crie o banco (se ainda não existir): `createdb -h localhost -U postgres db`
-     - Aplique o schema/seed: `psql -h localhost -U postgres -d db -f init.sql`
-   - Opção B — Subir Postgres em Docker (sem Compose):
-     - `docker run -d --name og-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=db -p 5432:5432 postgres:15-alpine`
-     - Aplique o schema/seed: `psql -h localhost -U postgres -d db -f init.sql`
+3) Rode o app:
+   - `docker run -p 80:80 -p 22:22 -p 5432:5432 justdecode`
 
-4) Rode o app (conectando ao Postgres do host):
-   - `docker run --name oficina-app --rm -p 80:80 -p 22:22 \
-      -e DB_HOST=host.docker.internal -e DB_PORT=5432 \
-      -e DB_USER=postgres -e DB_PASS=admin -e DB_NAME=db \
-      -e JWT_SECRET=secretkey oficina-guardian`
-
-5) Acesse no navegador:
+4) Acesse no navegador:
    - `http://localhost/`
 
 ## Usuários iniciais (seed)
@@ -90,9 +79,5 @@ Para execução local sem Docker, crie um arquivo `.env` (modelo em `MeuCTF/.env
 
 ## Portas
 - App: `80` (acesso em `http://localhost/`)
-- SSH interno do container: `22` (exposto em `localhost:22` se mapeado)
-
-## Dicas úteis
-- Use `--env-file .env` no `docker run` para carregar variáveis.
-- Se rodar o Postgres em outro host/porta, ajuste `DB_HOST`/`DB_PORT`.
-
+- SSH interno do container: `22`
+- Postgres no container: `5432`
