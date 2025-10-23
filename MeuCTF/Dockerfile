@@ -35,8 +35,8 @@ COPY . .
 
 # Set up users and CTF environment
 RUN adduser -D -s /bin/sh web && \
-    adduser -D -s /bin/sh ctfuser && \
-    adduser -D -s /bin/sh admin && \
+    adduser -D -s /bin/bash ctfuser && \
+    adduser -D -s /bin/bash admin && \
     echo 'ctfuser:ctfpass' | chpasswd && \
     echo 'admin:admin' | chpasswd && \
     echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config && \
@@ -50,7 +50,13 @@ RUN adduser -D -s /bin/sh web && \
     printf 'MAUA{stage3_root_privesc_success}\n' > /root/flag3.txt && \
     mkdir -p /home/admin && printf 'MAUA{stage2_user_via_ssh}\n' > /home/admin/user.txt && chown admin:admin /home/admin/user.txt && \
     chmod 0644 /opt/flags/flag1.txt /opt/flags/flag2.txt /home/admin/user.txt && \
-    chmod 0600 /root/flag3.txt
+    chmod 0600 /root/flag3.txt && \
+    printf "export PS1='\\u$\\w '\n" > /etc/profile.d/prompt.sh && \
+    mkdir -p /home/admin /home/ctfuser && \
+    printf "export PS1='\\u$\\w '\n" > /home/admin/.bashrc && \
+    printf "export PS1='\\u$\\w '\n" > /home/ctfuser/.bashrc && \
+    chown admin:admin /home/admin/.bashrc && \
+    chown ctfuser:ctfuser /home/ctfuser/.bashrc
 
 # Create startup script that runs PostgreSQL, SSH, and Node.js
 RUN echo '#!/bin/sh' > /app/start-all.sh && \

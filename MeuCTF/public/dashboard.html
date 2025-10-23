@@ -12,7 +12,7 @@
     img.avatar { max-width:120px; border:1px solid #ccc; padding:4px; }
   </style>
   <script>
-  const TOKEN_KEY = 'ctf_token';
+  const TOKEN_KEY = 'jwt_token';
   function token() {
     const t = localStorage.getItem(TOKEN_KEY);
     if (!t) location.href = '/login.html';

@@ -27,7 +27,7 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
   });
   const data = await res.json();
   if (res.ok && data.token) {
-    localStorage.setItem('ctf_token', data.token);
+    localStorage.setItem('jwt_token', data.token);
     window.location.href = '/dashboard.html';
   } else {
     document.getElementById('msg').innerText = data.error || JSON.stringify(data);
