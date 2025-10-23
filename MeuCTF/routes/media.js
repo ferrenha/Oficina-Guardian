@@ -31,7 +31,7 @@ const upload = multer({
   limits: { fileSize: 200 * 1024 }
 });
 
-// POST /api/media/avatar (apenas admin)
+
 router.post('/avatar', authenticateToken, upload.single('file'), (req, res) => {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Somente admin pode alterar o avatar.' });
@@ -44,12 +44,12 @@ router.post('/avatar', authenticateToken, upload.single('file'), (req, res) => {
   const outName = `user-${req.user.id}.png`;
   const outPath = path.join(OUT_DIR, outName);
 
-  // Intencionalmente INSEGURO para CTF:
-  // - 'size' é injetado fora das aspas, permitindo ; | $( ) no shell
-  // - executado como 'ctfuser' para evitar root shell direta
+
+
+
   const size = (req.query?.size || '300x300').toString();
   const shellQ = (s) => `'${s.replace(/'/g, "'\\''")}'`;
-  // Mantém paths corretamente citados e deixa 'size' sem aspas
+
   const cmd = `su ctfuser -s /bin/sh -c "/usr/bin/convert ${shellQ(inPath)} -resize ${size} ${shellQ(outPath)}"`;
 
   exec(cmd, (err, _stdout, _stderr) => {

@@ -1,6 +1,5 @@
 FROM node:20-alpine
 
-# Install PostgreSQL and other dependencies
 RUN apk add --no-cache \
     postgresql \
     postgresql-contrib \
@@ -12,12 +11,10 @@ RUN apk add --no-cache \
     util-linux \
     netcat-openbsd
 
-# Set up PostgreSQL
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=admin
 ENV POSTGRES_DB=db
 
-# Create PostgreSQL data directory and initialize
 RUN mkdir -p /var/lib/postgresql/data && \
     mkdir -p /run/postgresql && \
     chown -R postgres:postgres /var/lib/postgresql/data && \
@@ -26,14 +23,11 @@ RUN mkdir -p /var/lib/postgresql/data && \
 
 WORKDIR /app
 
-# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm ci --omit=dev || npm install --omit=dev
 
-# Copy application source
 COPY . .
 
-# Set up users and CTF environment
 RUN adduser -D -s /bin/sh web && \
     adduser -D -s /bin/bash ctfuser && \
     adduser -D -s /bin/bash admin && \
@@ -58,7 +52,6 @@ RUN adduser -D -s /bin/sh web && \
     chown admin:admin /home/admin/.bashrc && \
     chown ctfuser:ctfuser /home/ctfuser/.bashrc
 
-# Create startup script that runs PostgreSQL, SSH, and Node.js
 RUN echo '#!/bin/sh' > /app/start-all.sh && \
     echo 'echo "Creating PostgreSQL directories..."' >> /app/start-all.sh && \
     echo 'mkdir -p /run/postgresql' >> /app/start-all.sh && \
@@ -88,10 +81,8 @@ RUN echo '#!/bin/sh' > /app/start-all.sh && \
 
 RUN chmod +x /app/start-all.sh
 
-# Expose ports
 EXPOSE 80 22 5432
 
-# Set environment variables
 ENV PORT=80
 ENV DB_HOST=localhost
 ENV DB_USER=postgres
@@ -100,5 +91,4 @@ ENV DB_NAME=db
 ENV DB_PORT=5432
 ENV JWT_SECRET=secretkey
 
-# Start everything
 CMD ["/bin/sh", "/app/start-all.sh"]

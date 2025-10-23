@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const generic = (res, code = 401) =>
   res.status(code).json({ error: 'Usuário ou senha incorretos.' });
 
-// POST /register
+
 const registerUser = async (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return generic(res, 400);
@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-// POST /login
+
 const loginUser = async (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return generic(res);
@@ -66,7 +66,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-// GET /api/users
+
 const getUsers = async (_req, res) => {
   try {
     const result = await pool.query('SELECT id, username, role FROM users');
@@ -76,7 +76,7 @@ const getUsers = async (_req, res) => {
   }
 };
 
-// GET /api/users/me
+
 const getMe = (req, res) => {
   if (!req.user) return res.status(401).json({ error: 'Não autenticado.' });
   const { id, username, role } = req.user;

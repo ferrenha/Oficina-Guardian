@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use('/api/media', mediaRoutes);
 
 app.use(express.static(path.join(__dirname, 'public')));
-// Expose uploaded files for the challenge
+
 app.use('/api/users', userRoutes);
 
 const PORT = process.env.PORT || 80;
