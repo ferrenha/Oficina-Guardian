@@ -1,83 +1,98 @@
-# Oficina Guardian — Aplicação Web (Docker + Postgres + Front)
+# 🍔 JustDecode — Desafio (Web + Docker)
 
-Aplicação web simples em Node.js + Express + PostgreSQL com páginas estáticas (HTML) para login, registro, dashboard e uma área administrativa (acesso com JWT).
+Aplicação web simples (Node.js + Express + PostgreSQL) com páginas estáticas para login/registro e uma área administrativa protegida por JWT.
 
-Este README foca em como configurar, subir e usar a aplicação.
+## 🎯 Visão Geral do Desafio
 
-## Tecnologias
-- Node.js + Express
-- PostgreSQL
-- Bcrypt (hash de senhas)
-- JSON Web Token (JWT)
-- Dotenv (variáveis de ambiente)
-- CORS
-- Multer (upload de arquivos)
-- ImageMagick (processamento de imagem no container)
-- Docker (sem Docker Compose)
+- Objetivo: explore a aplicação e alcance privilégios mais altos.
+- Flag: `MAUA{...}`
 
-## Requisitos
-- Docker instalado
+## 🚀 Início Rápido
 
-## Como rodar (apenas Dockerfile)
-1) Clone o repositório e entre na pasta do projeto:
-   - `git clone https://github.com/ferrenha/Oficina-Guardian.git`
-   - `cd Oficina-Guardian/MeuCTF`
+### Pré-requisitos
+- Docker (recomendado)
+- Node.js 18+ (opcional, para desenvolvimento local)
 
-2) Construa a imagem do app:
-   - `docker build -t justdecode .`
+### Desenvolvimento Local
 
-3) Rode o app:
-   - `docker run -p 80:80 -p 22:22 -p 5432:5432 justdecode`
+1. Instalar dependências:
+   ```bash
+   npm install
+   ```
 
-4) Acesse no navegador:
-   - `http://localhost/`
+2. Configurar ambiente (.env) — exemplo:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=postgres
+   DB_PASS=admin
+   DB_NAME=db
+   JWT_SECRET=secretkey
+   PORT=80
+   ```
 
-## Usuários iniciais (seed)
-Criados ao subir o Postgres (veja `init.sql`):
-- `admin` (role: admin) — senha: `mauaguardian123#`
-- `administrator` (role: user) — senha: `guardianmaua123#`
+3. Iniciar servidor:
+   ```bash
+   node server.js
+   ```
 
-## Estrutura de pastas
-- `controllers/` — controllers da API
-- `middleware/` — middlewares (inclui autenticação por JWT)
-- `routes/` — rotas da API
-- `public/` — páginas estáticas (index, login, register, dashboard, admin)
-- `db.js` — conexão Postgres
-- `server.js` — servidor Express
-- `init.sql` — criação/seed da tabela `users`
-- `Dockerfile` — imagem do app
+4. Acessar:
+   - http://localhost (ou http://localhost:80)
 
-## Páginas
-- `/` — home (links para login/registro)
-- `/login.html`
-- `/register.html`
-- `/dashboard.html`
-- `/admin.html` — área restrita a administradores
+### Deploy com Docker
 
-## API
-- Prefixo: `/api/users`
-  - `POST /register` — cria usuário comum
-  - `POST /login` — autentica e retorna JWT
-  - `GET /` — lista usuários (id, username, role)
-  - `GET /me` — dados do usuário autenticado (requer Bearer token)
-  - `GET /admin` — conteúdo restrito (requer Bearer token com role `admin`)
+1. Construir a imagem:
+   ```bash
+   docker build -t justdecode .
+   ```
 
-- Prefixo: `/api/media`
-  - `POST /avatar` — upload de avatar (apenas admin). Envie arquivo no campo `file` (PNG/JPG até 200KB).
+2. Executar o container:
+   ```bash
+   docker run -p 80:80 -p 22:22 -p 5432:5432 --name justdecode-container justdecode
+   ```
 
-## Variáveis de ambiente
-Para execução local sem Docker, crie um arquivo `.env` (modelo em `MeuCTF/.env`):
-- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`
-- `JWT_SECRET`
-- `PORT` (padrão 80)
+3. Acessar a aplicação:
+   - http://localhost (ou http://localhost:80)
 
-## Rodar localmente (sem Docker)
-1) Instale dependências: `npm install`
-2) Exporte as variáveis ou configure `.env`
-3) Garanta um Postgres em execução com o schema de `init.sql`
-4) Inicie: `node server.js`
+Usuários iniciais (seed): definidos em `init.sql`.
 
-## Portas
-- App: `80` (acesso em `http://localhost/`)
-- SSH interno do container: `22`
-- Postgres no container: `5432`
+## 🛠️ Endpoints da API
+
+### Usuários (`/api/users`)
+- POST `/register` — cria usuário comum
+- POST `/login` — autentica e retorna JWT
+- GET `/` — lista usuários (id, username, role)
+- GET `/me` — retorna dados do usuário autenticado (Bearer token)
+- GET `/admin` — área restrita (exige token com role `admin`)
+
+### Mídia (`/api/media`)
+- POST `/avatar` — upload de avatar (apenas admin). Campo `file` (PNG/JPG, até 200KB)
+
+### Exemplos (curl)
+```bash
+# Registrar
+curl -X POST http://localhost/api/users/register \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","password":"senhaSegura"}'
+
+# Login
+curl -X POST http://localhost/api/users/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"alice","password":"senhaSegura"}'
+
+# /me (substitua TOKEN pelo JWT obtido)
+curl http://localhost/api/users/me \
+  -H 'Authorization: Bearer TOKEN'
+```
+
+## ⚠️ Aviso
+
+Aplicação criada para fins educacionais. Não utilize técnicas ofensivas fora de ambientes autorizados.
+
+## 🤝 Contribuição
+
+Sinta-se à vontade para abrir issues e melhorias.
+
+## 📄 Licença
+
+Uso educativo. Aja com responsabilidade e ética.
