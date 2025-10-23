@@ -1,4 +1,4 @@
-# 🍔 JustDecode — Desafio (Web + Docker)
+# 🍔 InsecureToken — Desafio (Web + Docker)
 
 Aplicação web simples (Node.js + Express + PostgreSQL) com páginas estáticas para login/registro e uma área administrativa protegida por JWT.
 
@@ -43,12 +43,12 @@ Aplicação web simples (Node.js + Express + PostgreSQL) com páginas estáticas
 
 1. Construir a imagem:
    ```bash
-   docker build -t justdecode .
+   docker build -t InsecureToken .
    ```
 
 2. Executar o container:
    ```bash
-   docker run -p 80:80 -p 22:22 -p 5432:5432 jsutdecode
+   docker run -p 80:80 -p 22:22 -p 5432:5432 insecuretoken
    ```
 
 3. Acessar a aplicação:
